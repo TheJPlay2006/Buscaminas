@@ -44,7 +44,7 @@ public class Juego {
         inicializarJuego();
     }
 
-    // ==================== INICIALIZACIÓN ====================
+   
 
     private void inicializarJuego() {
         crearCasillas();
@@ -94,7 +94,7 @@ public class Juego {
         return contador;
     }
 
-    // ==================== ACCIONES DEL JUGADOR ====================
+    // ACCIONES DEL JUGADOR 
 
     /**
      * Marca o desmarca una casilla
@@ -173,7 +173,7 @@ public class Juego {
         }
     }
 
-    // ==================== MÉTODOS DE CONSULTA ====================
+    // MÉTODOS DE CONSULTA 
 
     public Casilla getCasilla(int fila, int columna) {
         if (!coordenadasValidas(fila, columna)) return null;
@@ -236,7 +236,7 @@ public class Juego {
     }
 
     /**
-     * Información detallada (para debugging o GUI)
+     * Información detallada 
      */
     public String getEstadoDetallado() {
         StringBuilder stringB = new StringBuilder();
