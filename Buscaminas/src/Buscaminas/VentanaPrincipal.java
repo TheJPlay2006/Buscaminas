@@ -1,7 +1,11 @@
 package Buscaminas;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
     private int juegosJugados = 0;
@@ -11,56 +15,78 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
         // Configuración básica de la ventana
         setTitle("Buscaminas");
-        setSize(800, 600);
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Agregar el título llamativo
+        // Título llamativo
         JLabel titulo = new JLabel("BUSCAMINAS", SwingConstants.CENTER);
-        titulo.setFont(new Font("Arial", Font.BOLD, 48));
-        titulo.setForeground(Color.WHITE); // Color del texto blanco
-        titulo.setOpaque(true); // Hacer el fondo visible
-        titulo.setBackground(new Color(51, 153, 255)); // Azul claro como fondo del título
+        titulo.setFont(new Font("Arial", Font.BOLD, 36));
+        titulo.setForeground(Color.BLUE);
         add(titulo, BorderLayout.NORTH);
 
-        // Agregar el panel animado como fondo
-        PanelAnimado panelAnimado = new PanelAnimado();
-        add(panelAnimado, BorderLayout.CENTER);
-
-        // Crear un panel para los botones
+        // Panel para los botones
         JPanel panelBotones = new JPanel();
-        panelBotones.setOpaque(false); // Hacerlo transparente para ver el fondo animado
-        panelBotones.setLayout(new GridLayout(2, 1, 10, 10)); // Dos botones con espacio entre ellos
+        JButton btnNuevoJuego = new JButton("Nuevo Juego");
+        JButton btnSalir = new JButton("Salir");
 
-        // Botón "Nuevo Juego"
-        BotonEstilizado botonNuevoJuego = new BotonEstilizado("Nuevo Juego");
-        botonNuevoJuego.addActionListener(e -> iniciarNuevoJuego());
-        panelBotones.add(botonNuevoJuego);
+        // Acción para "Nuevo Juego"
+        btnNuevoJuego.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                iniciarNuevoJuego();
+            }
+        });
 
-        // Botón "Salir"
-        BotonEstilizado botonSalir = new BotonEstilizado("Salir");
-        botonSalir.addActionListener(e -> System.exit(0));
-        panelBotones.add(botonSalir);
+        // Acción para "Salir"
+        btnSalir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
 
-        // Agregar el panel de botones al centro de la ventana
+        panelBotones.add(btnNuevoJuego);
+        panelBotones.add(btnSalir);
         add(panelBotones, BorderLayout.CENTER);
 
-        // Mostrar la ventana
+        // Panel para las estadísticas
+        JPanel panelEstadisticas = new JPanel();
+        JLabel lblEstadisticas = new JLabel("Juegos Jugados: 0 | Ganados: 0 | Perdidos: 0");
+        panelEstadisticas.add(lblEstadisticas);
+        add(panelEstadisticas, BorderLayout.SOUTH);
+
         setVisible(true);
     }
 
     private void iniciarNuevoJuego() {
-        juegosJugados++;
-        JOptionPane.showMessageDialog(this, "Iniciando nuevo juego...");
-        mostrarEstadisticas();
+        // Solicitar el tamaño del tablero
+        String input = JOptionPane.showInputDialog(this, "Ingrese el tamaño del lado del tablero (mayor a 2):");
+        try {
+            int lado = Integer.parseInt(input);
+            if (lado <= 2) {
+                JOptionPane.showMessageDialog(this, "El tamaño del tablero debe ser mayor a 2.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Incrementar el contador de juegos jugados
+            juegosJugados++;
+
+            // Abrir la ventana del tablero
+            new VentanaTablero(lado, this);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void mostrarEstadisticas() {
-        JOptionPane.showMessageDialog(this,
-                "Juegos Jugados: " + juegosJugados +
-                        "\nGanados: " + juegosGanados +
-                        "\nPerdidos: " + juegosPerdidos,
-                "Estadísticas", JOptionPane.INFORMATION_MESSAGE);
+    public void actualizarEstadisticas(boolean ganado) {
+        if (ganado) {
+            juegosGanados++;
+        } else {
+            juegosPerdidos++;
+        }
+        System.out.println("Juegos Jugados: " + juegosJugados + " | Ganados: " + juegosGanados + " | Perdidos: " + juegosPerdidos);
     }
 
     public static void main(String[] args) {
