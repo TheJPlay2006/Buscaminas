@@ -109,14 +109,14 @@ public class Estadistica {
         if (juegosJugados > 0) {
             reporte.append("\nRacha actual: ");
             if (juegosGanados > juegosPerdidos) {
-                reporte.append("¡Más victorias que derrotas!");
+                reporte.append("Más victorias que derrotas");
             } else if (juegosPerdidos > juegosGanados) {
                 reporte.append("Más derrotas que victorias");
             } else {
                 reporte.append("Empate entre victorias y derrotas");
             }
         } else {
-            reporte.append("\n¡Aún no has jugado ninguna partida!");
+            reporte.append("\nAún no has jugado ninguna partida");
         }
         
         return reporte.toString();
@@ -193,11 +193,11 @@ public class Estadistica {
      */
     public String getMensajeBienvenida() {
         if (esPrimeraVez()) {
-            return "¡Bienvenido al Buscaminas!\n¡Tu primera aventura te espera!";
+            return "Bienvenido al Buscaminas\n Tu primera aventura te espera";
         } else if (juegosGanados > juegosPerdidos) {
-            return "¡Bienvenido de vuelta, experto!\nSigues con más victorias que derrotas.";
+            return "Bienvenido de vuelta, experto\nSigues con más victorias que derrotas.";
         } else if (juegosPerdidos > juegosGanados) {
-            return "¡No te rindas!\nCada juego es una nueva oportunidad.";
+            return "No te rindas\nCada juego es una nueva oportunidad.";
         } else {
             return "¡Bienvenido de vuelta!\nEstás en perfecto equilibrio.";
         }
