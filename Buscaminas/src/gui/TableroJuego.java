@@ -1,41 +1,48 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * TableroJuego.java
+ * Universidad Técnica Nacional - ITI Programación I
+ * Proyecto Buscaminas
  */
 package gui;
-
-/**
- *
- * @author TheJPlay2006
- */
-/*
- * TableroJuego.java
- * Ventana principal del juego Buscaminas.
- */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 import javax.swing.*;
 
+/**
+ * Clase que representa la ventana del juego Buscaminas.
+ * Permite al usuario jugar en un tablero LxL, destapando casillas y marcando minas.
+ * 
+ * @author [Tu Nombre]
+ */
 public class TableroJuego extends JFrame {
 
-    private final int L; // Tamaño del tablero
-    private final int MINAS;
-    private final guiPrincipal ventanaPrincipal;
+    private final int L;                   // Tamaño del tablero
+    private final int MINAS;               // Cantidad de minas: 2 * L
+    private final guiPrincipal ventanaPrincipal; // Para actualizar estadísticas
 
+    // Matrices del juego
     private boolean[][] tieneMina;
     private boolean[][] destapada;
     private boolean[][] marcada;
     private int[][] minasAlrededor;
 
+    // Botones del tablero
     private JButton[][] botones;
-    private boolean juegoTerminado;
 
-    // Estadísticas (serán actualizadas en ventanaPrincipal)
+    // Estado del juego
+    private boolean juegoTerminado;
     private int casillasDestapadasSinMina;
     private final int totalCasillasSinMina;
 
+    /**
+     * Constructor del tablero de juego.
+     * Inicializa el juego y muestra la ventana correctamente centrada.
+     * 
+     * @param L tamaño del lado del tablero
+     * @param ventanaPrincipal referencia a la ventana principal para estadísticas
+     */
     public TableroJuego(int L, guiPrincipal ventanaPrincipal) {
         this.L = L;
         this.MINAS = 2 * L;
@@ -44,33 +51,63 @@ public class TableroJuego extends JFrame {
         this.casillasDestapadasSinMina = 0;
         this.totalCasillasSinMina = (L * L) - MINAS;
 
-        // Inicializar arreglos
+        // Inicializar matrices
+        inicializarMatrices();
+
+        // Configurar ventana
+        configurarVentana();
+        crearInterfaz();
+
+        // Generar minas
+        colocarMinas();
+        calcularMinasAlrededor();
+
+        // === PASOS FINALES (orden correcto) ===
+        pack(); // Ajusta el tamaño al contenido
+        setSize(Math.min(800, L * 60), Math.min(600, L * 60)); // Tamaño adaptable
+        setLocationRelativeTo(null); // ✅ Centra en la pantalla
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setResizable(false);
+        setVisible(true); // Último paso: hacer visible
+    }
+
+    /**
+     * Inicializa todas las matrices del juego.
+     */
+    private void inicializarMatrices() {
         tieneMina = new boolean[L][L];
         destapada = new boolean[L][L];
         marcada = new boolean[L][L];
         minasAlrededor = new int[L][L];
         botones = new JButton[L][L];
 
-        inicializarTablero();
-        colocarMinas();
-        calcularMinasAlrededor();
-
-        configurarVentana();
-        crearInterfaz();
+        for (int i = 0; i < L; i++) {
+            for (int j = 0; j < L; j++) {
+                tieneMina[i][j] = false;
+                destapada[i][j] = false;
+                marcada[i][j] = false;
+                minasAlrededor[i][j] = 0;
+            }
+        }
     }
 
+    /**
+     * Configura las propiedades básicas de la ventana.
+     */
     private void configurarVentana() {
         setTitle("Buscaminas - " + L + "x" + L);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Evita cierre sin confirmar
         setLayout(new BorderLayout());
-        setResizable(false);
-        setLocationRelativeTo(null);
     }
 
+    /**
+     * Crea la interfaz gráfica del tablero.
+     */
     private void crearInterfaz() {
+        // Panel del tablero con GridLayout
         JPanel panelTablero = new JPanel(new GridLayout(L, L));
         panelTablero.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Crear botones
         for (int i = 0; i < L; i++) {
             for (int j = 0; j < L; j++) {
                 botones[i][j] = new JButton();
@@ -82,6 +119,7 @@ public class TableroJuego extends JFrame {
                 final int columna = j;
 
                 // Clic izquierdo: destapar
+                // Clic derecho: marcar/desmarcar
                 botones[i][j].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
@@ -101,7 +139,7 @@ public class TableroJuego extends JFrame {
 
         add(panelTablero, BorderLayout.CENTER);
 
-        // Menú: Juego Nuevo y Salir
+        // Menú superior
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menú");
 
@@ -115,22 +153,11 @@ public class TableroJuego extends JFrame {
         menu.add(itemSalir);
         menuBar.add(menu);
         setJMenuBar(menuBar);
-        setLocationRelativeTo(null);
-        pack();
-        setSize(600, 600);
     }
 
-    private void inicializarTablero() {
-        for (int i = 0; i < L; i++) {
-            for (int j = 0; j < L; j++) {
-                tieneMina[i][j] = false;
-                destapada[i][j] = false;
-                marcada[i][j] = false;
-                minasAlrededor[i][j] = 0;
-            }
-        }
-    }
-
+    /**
+     * Coloca aleatoriamente 2*L minas en el tablero.
+     */
     private void colocarMinas() {
         Random rand = new Random();
         int colocadas = 0;
@@ -144,6 +171,9 @@ public class TableroJuego extends JFrame {
         }
     }
 
+    /**
+     * Calcula cuántas minas hay alrededor de cada casilla.
+     */
     private void calcularMinasAlrededor() {
         int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -167,6 +197,11 @@ public class TableroJuego extends JFrame {
         }
     }
 
+    /**
+     * Destapa una casilla.
+     * Si tiene mina → pierde.
+     * Si no tiene mina → muestra número o propaga ceros.
+     */
     private void destapar(int fila, int columna) {
         if (destapada[fila][columna] || marcada[fila][columna] || juegoTerminado) {
             return;
@@ -182,17 +217,20 @@ public class TableroJuego extends JFrame {
         casillasDestapadasSinMina++;
         actualizarBoton(fila, columna);
 
-        // Propagar zona de ceros
+        // Propagar si es zona de ceros
         if (minasAlrededor[fila][columna] == 0) {
             destaparVecinas(fila, columna);
         }
 
-        // Verificar si ganó
+        // Verificar victoria
         if (casillasDestapadasSinMina == totalCasillasSinMina) {
             ganar();
         }
     }
 
+    /**
+     * Marca o desmarca una casilla con una bandera.
+     */
     private void marcar(int fila, int columna) {
         if (destapada[fila][columna] || juegoTerminado) {
             return;
@@ -213,6 +251,9 @@ public class TableroJuego extends JFrame {
         botones[fila][columna].repaint();
     }
 
+    /**
+     * Actualiza visualmente un botón destapado.
+     */
     private void actualizarBoton(int fila, int columna) {
         JButton btn = botones[fila][columna];
         int valor = minasAlrededor[fila][columna];
@@ -224,20 +265,26 @@ public class TableroJuego extends JFrame {
         btn.repaint();
     }
 
+    /**
+     * Devuelve un color según el número de minas alrededor.
+     */
     private Color getColorPorNumero(int num) {
-        switch (num) {
-            case 1: return Color.BLUE;
-            case 2: return Color.GREEN.darker();
-            case 3: return Color.RED;
-            case 4: return new Color(0, 0, 139);
-            case 5: return Color.MAGENTA.darker();
-            case 6: return Color.CYAN.darker();
-            case 7: return Color.BLACK;
-            case 8: return Color.GRAY;
-            default: return Color.BLACK;
-        }
+        return switch (num) {
+            case 1 -> Color.BLUE;
+            case 2 -> Color.GREEN.darker();
+            case 3 -> Color.RED;
+            case 4 -> new Color(0, 0, 139);
+            case 5 -> Color.MAGENTA.darker();
+            case 6 -> Color.CYAN.darker();
+            case 7 -> Color.BLACK;
+            case 8 -> Color.GRAY;
+            default -> Color.BLACK;
+        };
     }
 
+    /**
+     * Destapa recursivamente las casillas vecinas si están en zona de ceros.
+     */
     private void destaparVecinas(int fila, int columna) {
         int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -253,29 +300,46 @@ public class TableroJuego extends JFrame {
         }
     }
 
+    /**
+     * Acción al perder: muestra todas las minas.
+     */
     private void perder() {
         juegoTerminado = true;
         revelarTodasLasMinas();
 
+        // Mensaje de error
         JOptionPane.showMessageDialog(this,
-            "💥 ¡BOOM! Has pisado una mina.\nPerdiste el juego.",
+            "<html><div style='text-align:center; font-family: Arial;'>"
+            + "<b><font color='red' size='5'>💥 ¡BOOM! Has pisado una mina.</font></b><br><br>"
+            + "El juego ha terminado.<br>"
+            + "Se mostraron todas las minas.</div></html>",
             "Derrota", JOptionPane.ERROR_MESSAGE);
 
+        // Preguntar si quiere jugar de nuevo
         preguntarJugarNuevo();
     }
 
+    /**
+     * Acción al ganar: verifica que todas las minas estén marcadas.
+     */
     private void ganar() {
         juegoTerminado = true;
         revelarTodasLasMinasCorrectamente();
 
         JOptionPane.showMessageDialog(this,
-            "🎉 ¡Felicidades!\nHas encontrado todas las minas.",
+            "<html><div style='text-align:center; font-family: Arial;'>"
+            + "<b><font color='green' size='5'>🎉 ¡Felicidades!</font></b><br><br>"
+            + "Has identificado todas las minas correctamente.<br>"
+            + "¡Ganaste el juego!</div></html>",
             "¡Victoria!", JOptionPane.INFORMATION_MESSAGE);
 
-        ventanaPrincipal.incrementarGanados(); // Actualiza estadísticas
+        ventanaPrincipal.incrementarGanados();
         preguntarJugarNuevo();
     }
 
+    /**
+     * Muestra todas las minas (en rojo/pink si no estaban marcadas).
+     */
     private void revelarTodasLasMinas() {
         for (int i = 0; i < L; i++) {
             for (int j = 0; j < L; j++) {
@@ -292,6 +356,9 @@ public class TableroJuego extends JFrame {
         repaint();
     }
 
+    /**
+     * Muestra todas las minas con color de victoria.
+     */
     private void revelarTodasLasMinasCorrectamente() {
         for (int i = 0; i < L; i++) {
             for (int j = 0; j < L; j++) {
@@ -306,6 +373,9 @@ public class TableroJuego extends JFrame {
         repaint();
     }
 
+    /**
+     * Pregunta al usuario si desea jugar de nuevo.
+     */
     private void preguntarJugarNuevo() {
         int opcion = JOptionPane.showConfirmDialog(this,
             "¿Deseas jugar una nueva partida?",
@@ -317,13 +387,19 @@ public class TableroJuego extends JFrame {
         }
     }
 
+    /**
+     * Reinicia el juego con el mismo tamaño.
+     */
     private void confirmarNuevoJuego() {
         dispose();
         SwingUtilities.invokeLater(() -> {
-            new TableroJuego(L, ventanaPrincipal).setVisible(true);
+            new TableroJuego(L, ventanaPrincipal);
         });
     }
 
+    /**
+     * Cierra el juego y regresa a la ventana principal.
+     */
     private void confirmarSalir() {
         int opcion = JOptionPane.showConfirmDialog(this,
             "¿Estás seguro de que deseas salir?",
@@ -332,14 +408,5 @@ public class TableroJuego extends JFrame {
             dispose();
             ventanaPrincipal.setVisible(true);
         }
-    }
-
-    // Método para que ventanaPrincipal actualice estadísticas
-    public void marcarComoGanado() {
-        ventanaPrincipal.incrementarGanados();
-    }
-
-    public void marcarComoPerdido() {
-        ventanaPrincipal.incrementarPerdidos();
     }
 }
