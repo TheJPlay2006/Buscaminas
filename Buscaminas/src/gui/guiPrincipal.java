@@ -8,14 +8,78 @@ package gui;
  *
  * @author TheJPlay2006
  */
+
+import javax.swing.JOptionPane;
+
 public class guiPrincipal extends javax.swing.JFrame {
 
     /**
      * Creates new form guiPrincipal
      */
-    public guiPrincipal() {
+    
+    private int juegosJugados = 0;
+    private int juegosGanados = 0;
+    private int juegosPerdidos = 0;
+    
+   public guiPrincipal() {
         initComponents();
+        cargarEstadisticas();
+        configurarVentana();
     }
+
+    private void configurarVentana() {
+        // Centrar la ventana al abrir
+        setLocationRelativeTo(null);
+        
+        // Opcional: tamaño fijo
+        setResizable(false);
+    }
+    
+     private void cargarEstadisticas() {
+        lblEstadisticas.setText(
+            String.format("Estadísticas: Jugados=%d, Ganados=%d, Perdidos=%d",
+                juegosJugados, juegosGanados, juegosPerdidos)
+        );
+    }
+     
+      private void iniciarNuevoJuego() {
+        int opcion = JOptionPane.showConfirmDialog(this,
+            "¿Deseas iniciar un nuevo juego?",
+            "Juego Nuevo", JOptionPane.YES_NO_OPTION);
+        
+        if (opcion == JOptionPane.YES_OPTION) {
+            jTextField1.setText("");
+            jTextField1.requestFocus();
+        }
+    }
+      
+      private int obtenerTamanioTablero() {
+        String input = jTextField1.getText().trim();
+        
+        if (input.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Por favor, ingresa un valor para el tamaño del tablero (L).",
+                "Campo vacío", JOptionPane.WARNING_MESSAGE);
+            return -1;
+        }
+
+        try {
+            int L = Integer.parseInt(input);
+            if (L <= 2) {
+                JOptionPane.showMessageDialog(this,
+                    "El tamaño del tablero debe ser mayor a 2.",
+                    "Valor inválido", JOptionPane.ERROR_MESSAGE);
+                return -1;
+            }
+            return L;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                "Por favor, ingresa un número entero válido.",
+                "Error de formato", JOptionPane.ERROR_MESSAGE);
+            return -1;
+        }
+    }
+      
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,81 +91,136 @@ public class guiPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btnNuevoJuego = new javax.swing.JButton();
+        btnJugar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         lblTitulo = new javax.swing.JLabel();
+        lblEstadisticas = new javax.swing.JLabel();
+        lblTituloTablero = new javax.swing.JLabel();
+        lblMayor2 = new javax.swing.JLabel();
+        lblTexto = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenuSalir = new javax.swing.JMenu();
+        jMenuItemJuegoNuevo = new javax.swing.JMenuItem();
+        jMenuItemSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        btnNuevoJuego.setText("Nuevo juego");
-        btnNuevoJuego.addActionListener(new java.awt.event.ActionListener() {
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnJugar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnJugar.setText("Jugar");
+        btnJugar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoJuegoActionPerformed(evt);
+                btnJugarActionPerformed(evt);
             }
         });
+        jPanel1.add(btnJugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 300, 180, -1));
 
+        btnSalir.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
             }
         });
+        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 300, 200, -1));
 
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblTitulo.setForeground(new java.awt.Color(255, 255, 255));
         lblTitulo.setText("Buscaminas");
+        jPanel1.add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 10, 210, -1));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(224, 224, 224))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addComponent(btnNuevoJuego)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
-                .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(138, 138, 138))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(54, 54, 54)
-                .addComponent(lblTitulo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNuevoJuego)
-                    .addComponent(btnSalir))
-                .addGap(159, 159, 159))
-        );
+        lblEstadisticas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEstadisticas.setText("Estadisticas");
+        jPanel1.add(lblEstadisticas, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 80, 320, -1));
+
+        lblTituloTablero.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblTituloTablero.setText("Ingresa el tamaño del tablero (L)");
+        jPanel1.add(lblTituloTablero, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 110, -1, -1));
+
+        lblMayor2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblMayor2.setText("Debe ser mayor a 2");
+        jPanel1.add(lblMayor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, -1, -1));
+
+        lblTexto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblTexto.setText("Tamaño del tablero (L): ");
+        jPanel1.add(lblTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, -1, -1));
+        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 190, 280, 30));
+
+        jMenuSalir.setText("Menú");
+
+        jMenuItemJuegoNuevo.setText("Juego nuevo");
+        jMenuItemJuegoNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemJuegoNuevoActionPerformed(evt);
+            }
+        });
+        jMenuSalir.add(jMenuItemJuegoNuevo);
+
+        jMenuItemSalir.setText("Salir");
+        jMenuItemSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSalirActionPerformed(evt);
+            }
+        });
+        jMenuSalir.add(jMenuItemSalir);
+
+        jMenuBar1.add(jMenuSalir);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 645, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        System.exit(0);
+       int opcion = JOptionPane.showConfirmDialog(this,
+            "¿Estás seguro de que deseas salir?",
+            "Confirmar salida", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_btnSalirActionPerformed
 
-    private void btnNuevoJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoJuegoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnNuevoJuegoActionPerformed
+    public void incrementarGanados() {
+    juegosGanados++;
+    cargarEstadisticas();
+}
+
+public void incrementarPerdidos() {
+    juegosPerdidos++;
+    cargarEstadisticas();
+}
+    private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
+      int L = obtenerTamanioTablero();
+if (L == -1) return;
+
+juegosJugados++;
+cargarEstadisticas();
+
+// Cerrar ventana principal y abrir el tablero
+this.setVisible(false);
+new TableroJuego(L, this).setVisible(true);
+    }//GEN-LAST:event_btnJugarActionPerformed
+
+    private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed
+         btnSalirActionPerformed(evt); 
+    }//GEN-LAST:event_jMenuItemSalirActionPerformed
+
+    private void jMenuItemJuegoNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemJuegoNuevoActionPerformed
+         iniciarNuevoJuego();
+    }//GEN-LAST:event_jMenuItemJuegoNuevoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -139,9 +258,18 @@ public class guiPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnNuevoJuego;
+    private javax.swing.JButton btnJugar;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemJuegoNuevo;
+    private javax.swing.JMenuItem jMenuItemSalir;
+    private javax.swing.JMenu jMenuSalir;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblEstadisticas;
+    private javax.swing.JLabel lblMayor2;
+    private javax.swing.JLabel lblTexto;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JLabel lblTituloTablero;
     // End of variables declaration//GEN-END:variables
 }
