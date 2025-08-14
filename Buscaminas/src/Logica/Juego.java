@@ -1,25 +1,18 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Logica;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import modelo.Casilla;
-import modelo.Coordenada;
-
-/**
- *
- * @author Emesis
- */
-/**
- 
-/**
  * Clase Juego: representa la lógica interna del Buscaminas
  * Se encarga de inicializar el tablero, colocar minas, contar minas vecinas,
  * destapar casillas, marcar/desmarcar, expandir áreas vacías y verificar victoria.
  */
+package Logica;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.LinkedList;
+import java.util.Queue;
+import Modelo.Casilla;
+import Modelo.Coordenada;
+
 public class Juego {
 
     private final int tamaño;               // Tamaño del tablero
@@ -34,7 +27,7 @@ public class Juego {
         if (tamaño <= 2) throw new IllegalArgumentException("El tamaño debe ser > 2");
 
         this.tamaño = tamaño;
-        this.numeroMinas = 2 * tamaño;          // Definimos minas como 2*lado
+        this.numeroMinas = 2 * tamaño;
         this.tablero = new Casilla[tamaño][tamaño];
         this.juegoTerminado = false;
         this.juegoGanado = false;
@@ -43,8 +36,6 @@ public class Juego {
 
         inicializarJuego();
     }
-
-   
 
     private void inicializarJuego() {
         crearCasillas();
@@ -88,74 +79,106 @@ public class Juego {
 
     private int contarMinasVecinas(Coordenada coord) {
         int contador = 0;
-        for (Coordenada vecino : coord.getVecinos(tamaño)) {
-            if (tablero[vecino.getFila()][vecino.getColumna()].esMina()) contador++;
+        Coordenada[] vecinos = coord.getVecinos(tamaño);
+        for (Coordenada vecino : vecinos) {
+            if (vecino != null && tablero[vecino.getFila()][vecino.getColumna()].esMina()) {
+                contador++;
+            }
         }
         return contador;
     }
 
-    // ACCIONES DEL JUGADOR 
+    // ACCIONES DEL JUGADOR
 
     /**
      * Marca o desmarca una casilla
      */
-    public boolean marcarCasilla(int fila, int columna) {
-        if (!coordenadasValidas(fila, columna) || juegoTerminado) return false;
+  public boolean marcarCasilla(int fila, int columna) {
+    if (!coordenadasValidas(fila, columna) || juegoTerminado) return false;
 
-        Casilla c = tablero[fila][columna];
+    Casilla c = tablero[fila][columna];
 
-        if (!c.marcar()) return false; // No se puede marcar destapada
+    if (c.estaDestapada()) return false;
 
-        boolean estabaMarcada = c.estaMarcada();
-        if (!c.marcar()) return false;
+    if (c.estaMarcada()) {
+        c.marcar(); // desmarca
+        marcasUsadas--;
+        return true;
+    } else {
+        if (marcasUsadas >= numeroMinas) return false;
+        c.marcar(); // marca
+        marcasUsadas++;
+        return true;
+    }
+}
 
-        if (estabaMarcada) {
-            marcasUsadas--;
-        } else {
-            if (marcasUsadas >= numeroMinas) {
-                c.marcar(); // revertir
-                return false;
-            }
-            marcasUsadas++;
-        }
+    /**
+     * Destapa una casilla y expande si es vacía (valor 0)
+     */
+ public boolean destaparCasilla(int fila, int columna) {
+    if (!coordenadasValidas(fila, columna) || juegoTerminado) return false;
+
+    Casilla c = tablero[fila][columna];
+
+    if (c.estaDestapada()) return false;
+    if (c.estaMarcada()) return false; // no se puede destapar si está marcada
+
+    c.destapar();
+    casillasDestapadas++;
+
+    if (c.esMina()) {
+        juegoTerminado = true;
+        juegoGanado = false;
+        revelarTodasLasMinas();
         return true;
     }
 
-    /**
-     * Destapa una casilla y expande si es vacía
-     */
-    public boolean destaparCasilla(int fila, int columna) {
-        if (!coordenadasValidas(fila, columna) || juegoTerminado) return false;
+    if (c.getMinasVecinas() == 0) {
+        expandirAreaVacia(c.getPosicion());
+    }
 
-        Casilla c = tablero[fila][columna];
-        if (!c.destapar()) return false;
+    verificarVictoria();
+    return true;
+}
+
+private void expandirAreaVacia(Coordenada coordInicial) {
+    Queue<Coordenada> cola = new LinkedList<>();
+    boolean[][] visitadas = new boolean[tamaño][tamaño];
+
+    cola.offer(coordInicial);
+    visitadas[coordInicial.getFila()][coordInicial.getColumna()] = true;
+
+    while (!cola.isEmpty()) {
+        Coordenada actual = cola.poll();
+        int fila = actual.getFila();
+        int col = actual.getColumna();
+
+        if (!coordenadasValidas(fila, col)) continue;
+
+        Casilla c = tablero[fila][col];
+
+        if (c.estaDestapada() || c.estaMarcada() || c.esMina()) {
+            continue;
+        }
 
         c.destapar();
         casillasDestapadas++;
 
-        if (c.esMina()) {
-            juegoTerminado = true;
-            juegoGanado = false;
-            revelarTodasLasMinas();
-            return true;
-        }
-
-        if (c.esVacia()) expandirAreaVacia(c.getPosicion());
-
-        verificarVictoria();
-        return true;
-    }
-
-    private void expandirAreaVacia(Coordenada coord) {
-        for (Coordenada vecino : coord.getVecinos(tamaño)) {
-            Casilla c = tablero[vecino.getFila()][vecino.getColumna()];
-            if (c.estaDestapada()) {
-                c.destapar();
-                casillasDestapadas++;
-                if (c.esVacia()) expandirAreaVacia(vecino);
+        if (c.getMinasVecinas() == 0) {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue;
+                    int nf = fila + i;
+                    int nc = col + j;
+                    if (coordenadasValidas(nf, nc) && !visitadas[nf][nc]) {
+                        visitadas[nf][nc] = true;
+                        cola.offer(new Coordenada(nf, nc));
+                    }
+                }
             }
         }
     }
+}
 
     private void revelarTodasLasMinas() {
         for (int i = 0; i < tamaño; i++) {
@@ -167,13 +190,17 @@ public class Juego {
     }
 
     private void verificarVictoria() {
-        if (casillasDestapadas == (tamaño * tamaño - numeroMinas)) {
+        int totalCasillas = tamaño * tamaño;
+        int minas = numeroMinas;
+        int casillasSinMina = totalCasillas - minas;
+
+        if (casillasDestapadas == casillasSinMina) {
             juegoTerminado = true;
             juegoGanado = true;
         }
     }
 
-    // MÉTODOS DE CONSULTA 
+    // MÉTODOS DE CONSULTA
 
     public Casilla getCasilla(int fila, int columna) {
         if (!coordenadasValidas(fila, columna)) return null;
@@ -211,7 +238,7 @@ public class Juego {
         return marcadas;
     }
 
-    // GETTERS 
+    // GETTERS
     public int getTamaño() { return tamaño; }
     public int getNumeroMinas() { return numeroMinas; }
     public boolean isJuegoTerminado() { return juegoTerminado; }
@@ -219,14 +246,10 @@ public class Juego {
     public int getCasillasDestapadas() { return casillasDestapadas; }
     public int getMarcasUsadas() { return marcasUsadas; }
 
-    
     private boolean coordenadasValidas(int fila, int col) {
         return fila >= 0 && fila < tamaño && col >= 0 && col < tamaño;
     }
 
-    /**
-     * Reinicia el juego
-     */
     public void reiniciarJuego() {
         juegoTerminado = false;
         juegoGanado = false;
@@ -235,16 +258,13 @@ public class Juego {
         inicializarJuego();
     }
 
-    /**
-     * Información detallada 
-     */
     public String getEstadoDetallado() {
-        StringBuilder stringB = new StringBuilder();
-        stringB.append("Tablero ").append(tamaño).append("x").append(tamaño)
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tablero ").append(tamaño).append("x").append(tamaño)
           .append(", Minas: ").append(numeroMinas)
           .append(", Destapadas: ").append(casillasDestapadas)
           .append(", Marcadas: ").append(marcasUsadas)
           .append(", Estado: ").append(juegoTerminado ? (juegoGanado ? "GANADO" : "PERDIDO") : "EN CURSO");
-        return stringB.toString();
+        return sb.toString();
     }
 }

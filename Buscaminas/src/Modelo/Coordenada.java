@@ -2,13 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package modelo;
+package Modelo;
 
 /**
  *
  * @author Emesis
  */
-
 
 /**
  * Clase que representa una coordenada en el tablero del Buscaminas
@@ -34,9 +33,9 @@ public class Coordenada {
      * @param columnaUsuario Columna como la ingresa el usuario (1-base)
      * @return Nueva coordenada con índices convertidos
      */
-    public static Coordenada desdeUsuario(int filaUsuario, int columnaUsuario) {
-        return new Coordenada(filaUsuario - 1, columnaUsuario - 1);
-    }
+public static Coordenada desdeUsuario(int filaUsuario, int columnaUsuario) {
+    return new Coordenada(filaUsuario - 1, columnaUsuario - 1);
+}
     
     /**
      * Valida si esta coordenada está dentro del tablero
@@ -53,7 +52,9 @@ public class Coordenada {
      * @return Array con coordenadas vecinas válidas
      */
     public Coordenada[] getVecinos(int tamaño) {
-        java.util.List<Coordenada> vecinos = new java.util.ArrayList<>();
+        // Crear array con tamaño máximo posible (8 vecinos)
+        Coordenada[] vecinos = new Coordenada[8];
+        int contador = 0;
         
         // Revisar las 8 direcciones posibles
         int[] deltaFilas = {-1, -1, -1, 0, 0, 1, 1, 1};
@@ -65,11 +66,16 @@ public class Coordenada {
             
             Coordenada vecino = new Coordenada(nuevaFila, nuevaColumna);
             if (vecino.esValida(tamaño)) {
-                vecinos.add(vecino);
+                vecinos[contador] = vecino;
+                contador++;
             }
         }
         
-        return vecinos.toArray(new Coordenada[0]);
+        // Crear array del tamaño exacto con solo los vecinos válidos
+        Coordenada[] resultado = new Coordenada[contador];
+        System.arraycopy(vecinos, 0, resultado, 0, contador);
+        
+        return resultado;
     }
     
     /**

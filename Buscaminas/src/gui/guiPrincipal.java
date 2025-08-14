@@ -80,7 +80,15 @@ public class guiPrincipal extends javax.swing.JFrame {
         }
     }
       
+public void incrementarGanados() {
+    juegosGanados++;
+    cargarEstadisticas();
+}
 
+public void incrementarPerdidos() {
+    juegosPerdidos++;
+    cargarEstadisticas();
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -193,25 +201,15 @@ public class guiPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSalirActionPerformed
 
-    public void incrementarGanados() {
-    juegosGanados++;
-    cargarEstadisticas();
-}
-
-public void incrementarPerdidos() {
-    juegosPerdidos++;
-    cargarEstadisticas();
-}
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
-      int L = obtenerTamanioTablero();
+    int L = obtenerTamanioTablero();
 if (L == -1) return;
 
 juegosJugados++;
 cargarEstadisticas();
 
-// Cerrar ventana principal y abrir el tablero
 this.setVisible(false);
-new TableroJuego(L, this).setVisible(true);
+new TableroJuego(L, this);
     }//GEN-LAST:event_btnJugarActionPerformed
 
     private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed

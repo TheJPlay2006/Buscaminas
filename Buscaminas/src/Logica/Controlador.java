@@ -5,8 +5,8 @@
 package Logica;
 import java.util.ArrayList;
 import java.util.List;
-import modelo.Coordenada;
-import modelo.Casilla;
+import Modelo.Coordenada;
+import Modelo.Casilla;
 /**
  *
  * @author Emesis
@@ -16,10 +16,20 @@ import modelo.Casilla;
  * Controlador principal del juego Buscaminas.
  * Se encarga de recibir acciones del usuario, actualizar el juego y consultar estadísticas.
  */
+
+import java.util.ArrayList;
+import java.util.List;
+import Modelo.Coordenada;
+import Modelo.Casilla;
+
+/**
+ * Controlador principal del juego Buscaminas.
+ * Se encarga de recibir acciones del usuario, actualizar el juego y consultar estadísticas.
+ */
 public class Controlador {
 
     private Juego juego;                    // Instancia del juego actual
-    private Estadistica estadisticas;        // Registro de estadísticas del jugador
+    private Estadistica estadisticas;       // Registro de estadísticas del jugador
     private boolean juegoEnCurso;           // Indica si hay un juego activo
 
     /**
@@ -190,93 +200,4 @@ public class Controlador {
         if (juego == null) return new ArrayList<>();
         return juego.verificarSeleccion();
     }
-}
-
-//Clase soporte que nos ayudara a poder pasar la informacion mas no la logica 
-
-/**
- * Resultado de un movimiento del jugador
- */
-class ResultadoMovimiento {
-    private final boolean exito;
-    private final String mensaje;
-    private final EstadoJuego estadoJuego;
-
-    public ResultadoMovimiento(boolean exito, String mensaje, EstadoJuego estadoJuego) {
-        this.exito = exito;
-        this.mensaje = mensaje;
-        this.estadoJuego = estadoJuego;
-    }
-
-    public boolean isExito() { return exito; }
-    public String getMensaje() { return mensaje; }
-    public EstadoJuego getEstadoJuego() { return estadoJuego; }
-}
-
-
-class InfoCasilla {
-    private final String valor;
-    private final boolean esMina;
-    private final boolean estaMarcada;
-    private final boolean estaDestapada;
-
-    public InfoCasilla(String valor, boolean esMina, boolean estaMarcada, boolean estaDestapada) {
-        this.valor = valor;
-        this.esMina = esMina;
-        this.estaMarcada = estaMarcada;
-        this.estaDestapada = estaDestapada;
-    }
-
-    public String getValor() { return valor; }
-    public boolean isEsMina() { return esMina; }
-    public boolean isEstaMarcada() { return estaMarcada; }
-    public boolean isEstaDestapada() { return estaDestapada; }
-}
-
-
-class EstadoJuegoCompleto {
-    private final int tamaño, numeroMinas, marcasUsadas, casillasDestapadas;
-    private final EstadoJuego estado;
-    private final String estadisticas;
-
-    public EstadoJuegoCompleto(int tamaño, int numeroMinas, int marcasUsadas,int casillasDestapadas, EstadoJuego estado, String estadisticas) {
-        this.tamaño = tamaño;
-        this.numeroMinas = numeroMinas;
-        this.marcasUsadas = marcasUsadas;
-        this.casillasDestapadas = casillasDestapadas;
-        this.estado = estado;
-        this.estadisticas = estadisticas;
-    }
-
-    public int getTamaño() { return tamaño; }
-    public int getNumeroMinas() { return numeroMinas; }
-    public int getMarcasUsadas() { return marcasUsadas; }
-    public int getCasillasDestapadas() { return casillasDestapadas; }
-    public EstadoJuego getEstado() { return estado; }
-    public String getEstadisticas() { return estadisticas; }
-
-    public double getPorcentajeProgreso() {
-        int totalSinMinas = (tamaño * tamaño) - numeroMinas;
-        if (totalSinMinas == 0) return 100.0;
-        return (double) casillasDestapadas / totalSinMinas * 100.0;
-    }
-
-    public int getMarcasRestantes() { return numeroMinas - marcasUsadas; }
-}
-
-/**
- * Estados posibles del juego
- */
-enum EstadoJuego {
-    SIN_JUEGO("No hay juego activo"),
-    EN_CURSO("Juego en progreso"),
-    GANADO("Juego ganado"),
-    PERDIDO("Juego perdido");
-
-    private final String descripcion;
-
-    EstadoJuego(String descripcion) { this.descripcion = descripcion; }
-    public String getDescripcion() { return descripcion; }
-    @Override
-    public String toString() { return descripcion; }
 }
