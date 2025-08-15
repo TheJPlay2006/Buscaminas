@@ -7,27 +7,11 @@ package Logica;
 
 /**
  *
- * @author TheJPlay2006
+ * @author Emesis
  */
 
 public enum EstadoJuego {
-    SIN_JUEGO("No hay juego activo"),
-    EN_CURSO("Juego en progreso"),
-    GANADO("Juego ganado"),
-    PERDIDO("Juego perdido");
-
-    private final String descripcion;
-
-    EstadoJuego(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    @Override
-    public String toString() {
-        return descripcion;
-    }
+    JUGANDO,
+    PERDIDO,
+    GANADO
 }

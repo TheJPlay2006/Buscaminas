@@ -3,201 +3,158 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Logica;
-import java.util.ArrayList;
-import java.util.List;
-import Modelo.Coordenada;
-import Modelo.Casilla;
+
 /**
  *
  * @author Emesis
  */
 
-/**
- * Controlador principal del juego Buscaminas.
- * Se encarga de recibir acciones del usuario, actualizar el juego y consultar estadísticas.
- */
-
-import java.util.ArrayList;
-import java.util.List;
-import Modelo.Coordenada;
 import Modelo.Casilla;
+import Modelo.Coordenada;
+import java.util.*;
 
-/**
- * Controlador principal del juego Buscaminas.
- * Se encarga de recibir acciones del usuario, actualizar el juego y consultar estadísticas.
- */
 public class Controlador {
+    private int ladoTablero;
+    private Casilla[][] tablero;
+    private List<Coordenada> minas;
+    private EstadoJuego estadoJuego;
+    private boolean primeraVez;
+    private Estadistica estadistica;
 
-    private Juego juego;                    // Instancia del juego actual
-    private Estadistica estadisticas;       // Registro de estadísticas del jugador
-    private boolean juegoEnCurso;           // Indica si hay un juego activo
-
-    /**
-     * Constructor del controlador
-     * Inicializa estadísticas y marca que no hay juego en curso.
-     */
-    public Controlador() {
-        this.estadisticas = Estadistica.getInstancia();
-        this.juegoEnCurso = false;
+    public Controlador(int ladoTablero) {
+        this.ladoTablero = ladoTablero;
+        this.tablero = new Casilla[ladoTablero][ladoTablero];
+        this.minas = new ArrayList<>();
+        this.estadoJuego = EstadoJuego.JUGANDO;
+        this.primeraVez = true;
+        this.estadistica = new Estadistica();
+        inicializarTablero();
     }
 
-    /**
-     * Inicia un nuevo juego con el tamaño especificado
-     * @param tamaño Tamaño del tablero (lado)
-     * @return true si se pudo iniciar, false si el tamaño es inválido
-     */
-    public boolean iniciarNuevoJuego(int tamaño) {
-        if (tamaño <= 2) return false; // Tablero demasiado pequeño
-        this.juego = new Juego(tamaño);
-        this.juegoEnCurso = true;
+    private void inicializarTablero() {
+        for (int i = 0; i < ladoTablero; i++) {
+            for (int j = 0; j < ladoTablero; j++) {
+                tablero[i][j] = new Casilla();
+            }
+        }
+    }
+
+    public boolean destapar(Coordenada coord) {
+        int fila = coord.getFila();
+        int columna = coord.getColumna();
+
+        if (fila < 0 || fila >= ladoTablero || columna < 0 || columna >= ladoTablero) return false;
+        Casilla c = tablero[fila][columna];
+        if (c.isEstaDestapada() || c.isEstaMarcada()) return false;
+
+        if (primeraVez) {
+            generarMinasSinCoordenada(fila, columna);
+            primeraVez = false;
+        }
+
+        c.setEstaDestapada(true);
+
+        if (c.tieneMina()) {
+            estadoJuego = EstadoJuego.PERDIDO;
+            return true;
+        }
+
+        if (c.getMinasVecinas() == 0) {
+            destaparVecindad(coord);
+        }
+
         return true;
     }
 
-    /**
-     * Procesa la acción de un usuario usando coordenadas 1-based
-     * @param filaUsuario fila ingresada por usuario (1-base)
-     * @param columnaUsuario columna ingresada por usuario (1-base)
-     * @param accion "destapar", "marcar" o "desmarcar"
-     * @return ResultadoMovimiento indicando éxito, mensaje y estado del juego
-     */
-    public ResultadoMovimiento manejarEntradaUsuario(int filaUsuario, int columnaUsuario, String accion) {
-        Coordenada c = Coordenada.desdeUsuario(filaUsuario, columnaUsuario);
-        return ejecutarAccionUsuario(c.getFila(), c.getColumna(), accion);
-    }
+    private void generarMinasSinCoordenada(int filaExcluida, int columnaExcluida) {
+        Random random = new Random();
+        int numMinas = 2 * ladoTablero;
+        int generadas = 0;
 
-    /**
-     * Procesa la acción del usuario usando índices 0-based
-     */
-    public ResultadoMovimiento ejecutarAccionUsuario(int fila, int columna, String accion) {
-        if (!juegoEnCurso || juego == null) {
-            return new ResultadoMovimiento(false, "No hay juego en curso", EstadoJuego.SIN_JUEGO);
+        while (generadas < numMinas) {
+            int fila = random.nextInt(ladoTablero);
+            int columna = random.nextInt(ladoTablero);
+            if (fila == filaExcluida && columna == columnaExcluida) continue;
+
+            Coordenada coord = new Coordenada(fila, columna);
+            if (!minas.contains(coord)) {
+                minas.add(coord);
+                tablero[fila][columna].setTieneMina(true);
+                generadas++;
+            }
         }
 
-        boolean exito = false;
-        String mensaje = "";
-        EstadoJuego estado = EstadoJuego.EN_CURSO;
+        calcularMinasVecinas();
+    }
 
-        switch (accion.toLowerCase()) {
-            case "destapar":
-                exito = juego.destaparCasilla(fila, columna);
-                if (!exito) {
-                    mensaje = "No se puede destapar esta casilla";
-                } else {
-                    mensaje = "Casilla destapada";
-                    if (juego.isJuegoTerminado()) {
-                        juegoEnCurso = false;
-                        if (juego.isJuegoGanado()) {
-                            estado = EstadoJuego.GANADO;
-                            mensaje = "¡Felicitaciones! ¡Has ganado!";
-                            estadisticas.registrarJuegoGanado();
-                        } else {
-                            estado = EstadoJuego.PERDIDO;
-                            mensaje = "¡Boom! Has perdido.";
-                            estadisticas.registrarJuegoPerdido();
+    private void calcularMinasVecinas() {
+        int[][] direcciones = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
+        for (int i = 0; i < ladoTablero; i++) {
+            for (int j = 0; j < ladoTablero; j++) {
+                if (!tablero[i][j].tieneMina()) {
+                    int contador = 0;
+                    for (int[] dir : direcciones) {
+                        int ni = i + dir[0], nj = j + dir[1];
+                        if (ni >= 0 && ni < ladoTablero && nj >= 0 && nj < ladoTablero) {
+                            if (tablero[ni][nj].tieneMina()) contador++;
                         }
                     }
+                    tablero[i][j].setMinasVecinas(contador);
                 }
-                break;
+            }
+        }
+    }
 
-            case "marcar":
-                exito = juego.marcarCasilla(fila, columna);
-                if (!exito) {
-                    if (juego.getMarcasUsadas() >= juego.getNumeroMinas()) {
-                        mensaje = "No tienes más marcas disponibles";
-                    } else {
-                        mensaje = "No se puede marcar esta casilla";
+    private void destaparVecindad(Coordenada coord) {
+        int[][] direcciones = {{-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,1}, {1,-1}, {1,0}, {1,1}};
+        for (int[] dir : direcciones) {
+            int ni = coord.getFila() + dir[0];
+            int nj = coord.getColumna() + dir[1];
+            if (ni >= 0 && ni < ladoTablero && nj >= 0 && nj < ladoTablero) {
+                Casilla vecina = tablero[ni][nj];
+                if (!vecina.isEstaDestapada() && !vecina.isEstaMarcada()) {
+                    vecina.setEstaDestapada(true);
+                    if (vecina.getMinasVecinas() == 0) {
+                        destaparVecindad(new Coordenada(ni, nj));
                     }
-                } else {
-                    mensaje = "Casilla marcada";
                 }
-                break;
-
-            case "desmarcar":
-                if (juego.estaMarcada(fila, columna)) {
-                    exito = juego.marcarCasilla(fila, columna); // Alterna marca
-                    mensaje = exito ? "Casilla desmarcada" : "No se pudo desmarcar";
-                } else {
-                    mensaje = "La casilla no está marcada";
-                }
-                break;
-
-            default:
-                mensaje = "Acción no válida: use destapar, marcar o desmarcar";
-                break;
+            }
         }
-
-        return new ResultadoMovimiento(exito, mensaje, estado);
     }
 
-    /**
-     * Obtiene información de una casilla usando índices 0-based
-     */
-    public InfoCasilla getInfoCasilla(int fila, int columna) {
-        if (juego == null) return new InfoCasilla("", false, false, false);
-
-        Casilla c = juego.getCasilla(fila, columna);
-        if (c == null) return new InfoCasilla("", false, false, false);
-
-        return new InfoCasilla(c.valorMostrar(), c.esMina(), c.estaMarcada(), c.estaDestapada());
-    }
-
-    /**
-     * Obtiene información de una casilla usando coordenadas 1-based
-     */
-    public InfoCasilla getInfo(int filaUsuario, int columnaUsuario) {
-        Coordenada c = Coordenada.desdeUsuario(filaUsuario, columnaUsuario);
-        return getInfoCasilla(c.getFila(), c.getColumna());
-    }
-
-    /**
-     * Devuelve el estado completo del juego para la interfaz
-     */
-    public EstadoJuegoCompleto getEstadoJuego() {
-        if (juego == null) {
-            return new EstadoJuegoCompleto(0, 0, 0, 0, EstadoJuego.SIN_JUEGO, estadisticas.generarReporteCorto());
+    public void marcar(Coordenada coord) {
+        int fila = coord.getFila();
+        int columna = coord.getColumna();
+        if (fila < 0 || fila >= ladoTablero || columna < 0 || columna >= ladoTablero) return;
+        Casilla c = tablero[fila][columna];
+        if (!c.isEstaDestapada()) {
+            c.setEstaMarcada(!c.isEstaMarcada());
         }
-
-        EstadoJuego estado = !juegoEnCurso
-                ? (juego.isJuegoGanado() ? EstadoJuego.GANADO : EstadoJuego.PERDIDO)
-                : EstadoJuego.EN_CURSO;
-
-        return new EstadoJuegoCompleto(
-                juego.getTamaño(),
-                juego.getNumeroMinas(),
-                juego.getMarcasUsadas(),
-                juego.getCasillasDestapadas(),
-                estado,
-                estadisticas.generarReporteCorto()
-        );
     }
 
-    // Estadísticas y mensajes
-    public String getEstadisticas() { return estadisticas.generarReporte(); }
-    public String getEstadisticasCortas() { return estadisticas.generarReporteCorto(); }
-    public String getMensajeBienvenida() { return estadisticas.getMensajeBienvenida(); }
-    public void reiniciarEstadisticas() { estadisticas.resetearEstadisticas(); }
-
-    // Verificaciones de juego
-    public boolean hayJuegoEnCurso() { return juegoEnCurso && juego != null && !juego.isJuegoTerminado(); }
-
-    // Conversión y validación de coordenadas de usuario
-    public int cambiarCoordenada(int coordenadasUsuario) { return coordenadasUsuario - 1; }
-    public boolean coordenadasBuenas(int filaUsuario, int colUsuario) {
-        if (juego == null) return false;
-        return Coordenada.desdeUsuario(filaUsuario, colUsuario).esValida(juego.getTamaño());
+    public Casilla getCasilla(Coordenada coord) {
+        return tablero[coord.getFila()][coord.getColumna()];
     }
 
-    // Información de debugging o lista de minas/marcadas
-    public String getDetalles() {
-        if (juego == null) return "No hay juego activo\n" + estadisticas.generarReporte();
-        return juego.getEstadoDetallado() + "\n" + estadisticas.generarReporte();
+    public List<Coordenada> getMinas() {
+        return new ArrayList<>(minas);
     }
-    public List<Coordenada> obtenerMinas() {
-        if (juego == null) return new ArrayList<>();
-        return juego.obtenerMinas();
+
+    public EstadoJuego getEstadoJuego() {
+        return estadoJuego;
     }
-    public List<Coordenada> verificarSeleccion() {
-        if (juego == null) return new ArrayList<>();
-        return juego.verificarSeleccion();
+
+    public int getLadoTablero() {
+        return ladoTablero;
+    }
+
+    public Estadistica getEstadistica() {
+        return estadistica;
+    }
+
+    public void revelarMinas() {
+        for (Coordenada m : minas) {
+            tablero[m.getFila()][m.getColumna()].revelar();
+        }
     }
 }

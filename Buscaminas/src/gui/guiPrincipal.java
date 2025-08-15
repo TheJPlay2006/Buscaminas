@@ -6,7 +6,7 @@ package gui;
 
 /**
  *
- * @author TheJPlay2006
+ * @author Jairo
  */
 
 import javax.swing.JOptionPane;
@@ -20,11 +20,12 @@ public class guiPrincipal extends javax.swing.JFrame {
     private int juegosJugados = 0;
     private int juegosGanados = 0;
     private int juegosPerdidos = 0;
-    
-   public guiPrincipal() {
+
+    public guiPrincipal() {
         initComponents();
         cargarEstadisticas();
-        configurarVentana();
+        setLocationRelativeTo(null);
+        setResizable(false);
     }
 
     private void configurarVentana() {
@@ -43,52 +44,43 @@ public class guiPrincipal extends javax.swing.JFrame {
     }
      
       private void iniciarNuevoJuego() {
-        int opcion = JOptionPane.showConfirmDialog(this,
-            "¿Deseas iniciar un nuevo juego?",
-            "Juego Nuevo", JOptionPane.YES_NO_OPTION);
-        
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas iniciar un nuevo juego?", "Juego Nuevo", JOptionPane.YES_NO_OPTION);
         if (opcion == JOptionPane.YES_OPTION) {
             jTextField1.setText("");
             jTextField1.requestFocus();
         }
     }
       
-      private int obtenerTamanioTablero() {
+     private int obtenerTamanioTablero() {
         String input = jTextField1.getText().trim();
-        
         if (input.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor, ingresa un valor para el tamaño del tablero (L).",
-                "Campo vacío", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Por favor, ingresa el tamaño del tablero (L).", "Campo vacío", JOptionPane.WARNING_MESSAGE);
             return -1;
         }
-
         try {
             int L = Integer.parseInt(input);
             if (L <= 2) {
-                JOptionPane.showMessageDialog(this,
-                    "El tamaño del tablero debe ser mayor a 2.",
-                    "Valor inválido", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "El tamaño debe ser mayor a 2.", "Valor inválido", JOptionPane.ERROR_MESSAGE);
                 return -1;
             }
             return L;
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor, ingresa un número entero válido.",
-                "Error de formato", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
             return -1;
         }
     }
       
-public void incrementarGanados() {
-    juegosGanados++;
-    cargarEstadisticas();
-}
+ public void incrementarGanados() {
+        juegosGanados++;
+        juegosJugados++;
+        cargarEstadisticas();
+    }
 
-public void incrementarPerdidos() {
-    juegosPerdidos++;
-    cargarEstadisticas();
-}
+    public void incrementarPerdidos() {
+        juegosPerdidos++;
+        juegosJugados++;
+        cargarEstadisticas();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -193,23 +185,16 @@ public void incrementarPerdidos() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-       int opcion = JOptionPane.showConfirmDialog(this,
-            "¿Estás seguro de que deseas salir?",
-            "Confirmar salida", JOptionPane.YES_NO_OPTION);
-        if (opcion == JOptionPane.YES_OPTION) {
-            System.exit(0);
-        }
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Salir?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) System.exit(0);
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJugarActionPerformed
     int L = obtenerTamanioTablero();
-if (L == -1) return;
+        if (L == -1) return;
 
-juegosJugados++;
-cargarEstadisticas();
-
-this.setVisible(false);
-new TableroJuego(L, this);
+        this.setVisible(false);
+        new TableroJuego(L, this);
     }//GEN-LAST:event_btnJugarActionPerformed
 
     private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed
