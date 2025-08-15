@@ -22,12 +22,12 @@
     <td align="center">
       <img src="https://img.shields.io/badge/👨‍💻-DEVELOPER-blue?style=for-the-badge" alt="Developer 1"/><br>
       <b>🔥 Jairo Herrera Romero</b><br>
-      <i>Full Stack Developer</i>
+      <i>Java Developer</i>
     </td>
     <td align="center">
       <img src="https://img.shields.io/badge/👨‍💻-DEVELOPER-green?style=for-the-badge" alt="Developer 2"/><br>
       <b>⚡ Emesis Mairena Sevilla</b><br>
-      <i>Full Stack Developer</i>
+      <i>Java Developer</i>
     </td>
   </tr>
 </table>
@@ -107,51 +107,41 @@
 ### 📊 Diagrama de Clases (UML)
 
 ```
-🎮 BuscaminasGame
-├── 🎯 TableroController
-├── 🎨 InterfazGrafica
-├── 📊 EstadisticasManager
-└── 💣 MinaGenerator
+🎮 Buscaminas
+├── 📦 Logica/
+│   ├── 🎯 Controlador.java
+│   ├── 📊 Estadistica.java
+│   └── 🎮 TableroJuego.java
+├── 📦 Main/
+│   ├── 📱 Main.java
+│   └── 📦 Modelo/
+│       ├── 🔲 Casilla.java
+│       └── 📍 Coordenada.java
+└── 📦 gui/
+    ├── 🎯 TableroJuego.java
+    └── 🎨 VentanaPrincipal.java
 ```
 
 ### 🗂️ Estructura de Archivos
 
 ```
-📦 BuscaminasUTN/
+📦 Buscaminas/
 ├── 📁 src/
-│   ├── 📁 model/
-│   │   ├── 🎮 Tablero.java
-│   │   ├── 💣 Mina.java
-│   │   └── 📊 Estadisticas.java
-│   ├── 📁 view/
-│   │   ├── 🎨 InterfazPrincipal.java
-│   │   └── 🎯 PanelJuego.java
-│   └── 📁 controller/
-│       └── 🕹️ GameController.java
+│   ├── 📁 Logica/
+│   │   ├── 🎯 Controlador.java
+│   │   ├── 📊 Estadistica.java
+│   │   └── 🎮 TableroJuego.java
+│   ├── 📁 Main/
+│   │   ├── 📱 Main.java
+│   │   └── 📁 Modelo/
+│   │       ├── 🔲 Casilla.java
+│   │       └── 📍 Coordenada.java
+│   └── 📁 gui/
+│       ├── 🎯 TableroJuego.java
+│       └── 🎨 VentanaPrincipal.java
 ├── 📄 README.md
-└── 📋 docs/
-    └── 📖 DocumentacionTecnica.pdf
+└── 📁 Libraries/
 ```
-
----
-
-## 🎨 Capturas de Pantalla
-
-<div align="center">
-
-### 🏠 Menú Principal
-![Menu Principal](https://img.shields.io/badge/🏠-MENÚ_PRINCIPAL-blue?style=for-the-badge)
-
-### 🎮 Jugando
-![Gameplay](https://img.shields.io/badge/🎮-EN_JUEGO-green?style=for-the-badge)
-
-### 💥 Game Over
-![Game Over](https://img.shields.io/badge/💥-GAME_OVER-red?style=for-the-badge)
-
-### 🏆 Victoria
-![Victoria](https://img.shields.io/badge/🏆-VICTORIA-gold?style=for-the-badge)
-
-</div>
 
 ---
 
@@ -214,8 +204,8 @@
 
 <div align="center">
 
-[![GitHub Issues](https://img.shields.io/badge/🐛-REPORTAR_BUG-red?style=for-the-badge)](https://github.com/[tu-usuario]/buscaminas-utn/issues)
-[![GitHub Discussions](https://img.shields.io/badge/💬-DISCUSIONES-blue?style=for-the-badge)](https://github.com/[tu-usuario]/buscaminas-utn/discussions)
+[![GitHub Issues](https://img.shields.io/badge/🐛-REPORTAR_BUG-red?style=for-the-badge)](https://github.com/TheJPlay2006/Buscaminas/issues)
+[![GitHub Discussions](https://img.shields.io/badge/💬-DISCUSIONES-blue?style=for-the-badge)](https://github.com/TheJPlay2006/Buscaminas/discussions)
 
 </div>
 
