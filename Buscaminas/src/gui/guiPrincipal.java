@@ -9,6 +9,7 @@ package gui;
  * @author Jairo
  */
 
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class guiPrincipal extends javax.swing.JFrame {
@@ -35,7 +36,7 @@ public class guiPrincipal extends javax.swing.JFrame {
         // Opcional: tamaño fijo
         setResizable(false);
     }
-    
+
      private void cargarEstadisticas() {
         lblEstadisticas.setText(
             String.format("Estadísticas: Jugados=%d, Ganados=%d, Perdidos=%d",
@@ -91,14 +92,11 @@ public class guiPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btnJugar = new javax.swing.JButton();
-        btnSalir = new javax.swing.JButton();
-        lblTitulo = new javax.swing.JLabel();
         lblEstadisticas = new javax.swing.JLabel();
-        lblTituloTablero = new javax.swing.JLabel();
-        lblMayor2 = new javax.swing.JLabel();
-        lblTexto = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        btnSalir = new javax.swing.JButton();
+        btnJugar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuSalir = new javax.swing.JMenu();
         jMenuItemJuegoNuevo = new javax.swing.JMenuItem();
@@ -108,45 +106,41 @@ public class guiPrincipal extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        btnJugar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        btnJugar.setText("Jugar");
-        btnJugar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnJugarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnJugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 300, 180, -1));
+        lblEstadisticas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEstadisticas.setText("Estadisticas");
+        jPanel1.add(lblEstadisticas, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 320, -1));
+
+        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
+        jTextField1.setForeground(new java.awt.Color(0, 0, 0));
+        jTextField1.setBorder(null);
+        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 240, 300, 20));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/fondo.png"))); // NOI18N
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 380));
 
         btnSalir.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        btnSalir.setText("Salir");
+        btnSalir.setBorder(null);
+        btnSalir.setBorderPainted(false);
+        btnSalir.setContentAreaFilled(false);
+        btnSalir.setDefaultCapable(false);
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
             }
         });
-        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 300, 200, -1));
+        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 320, 110, 30));
 
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        lblTitulo.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitulo.setText("Buscaminas");
-        jPanel1.add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 10, 210, -1));
-
-        lblEstadisticas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblEstadisticas.setText("Estadisticas");
-        jPanel1.add(lblEstadisticas, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 80, 320, -1));
-
-        lblTituloTablero.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblTituloTablero.setText("Ingresa el tamaño del tablero (L)");
-        jPanel1.add(lblTituloTablero, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 110, -1, -1));
-
-        lblMayor2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblMayor2.setText("Debe ser mayor a 2");
-        jPanel1.add(lblMayor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, -1, -1));
-
-        lblTexto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblTexto.setText("Tamaño del tablero (L): ");
-        jPanel1.add(lblTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 190, 280, 30));
+        btnJugar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnJugar.setBorder(null);
+        btnJugar.setBorderPainted(false);
+        btnJugar.setContentAreaFilled(false);
+        btnJugar.setFocusPainted(false);
+        btnJugar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnJugarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnJugar, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 320, 110, 30));
 
         jMenuSalir.setText("Menú");
 
@@ -178,7 +172,7 @@ public class guiPrincipal extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -243,6 +237,7 @@ public class guiPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnJugar;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItemJuegoNuevo;
     private javax.swing.JMenuItem jMenuItemSalir;
@@ -250,9 +245,5 @@ public class guiPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblEstadisticas;
-    private javax.swing.JLabel lblMayor2;
-    private javax.swing.JLabel lblTexto;
-    private javax.swing.JLabel lblTitulo;
-    private javax.swing.JLabel lblTituloTablero;
     // End of variables declaration//GEN-END:variables
 }
