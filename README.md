@@ -1,5 +1,11 @@
 # 💣 BUSCAMINAS UTN 💣
 
+<!-- local-development:start -->
+## Desarrollo local
+
+Consulta [RUNNING.md](RUNNING.md) para ubicar cada componente, abrirlo en su IDE, compilarlo y conocer las comprobaciones realizadas y los requisitos pendientes.
+<!-- local-development:end -->
+
 <div align="center">
 
 ![Buscaminas Banner](https://img.shields.io/badge/💥_BUSCAMINAS-JAVA-orange?style=for-the-badge&logo=java)
